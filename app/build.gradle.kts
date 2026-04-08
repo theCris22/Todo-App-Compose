@@ -46,7 +46,7 @@ android {
 
 configurations.all {
     resolutionStrategy.force(
-        "com.squareup:javapoet:1.13.0"
+        "com.squareup:javapoet:1.13.0",
     )
 }
 
@@ -67,6 +67,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Hilt navigation
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Icons
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Dagger
     implementation(libs.hilt.android)
