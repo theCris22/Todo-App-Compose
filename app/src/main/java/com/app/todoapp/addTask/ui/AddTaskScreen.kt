@@ -4,13 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.DeleteSweep
+import androidx.compose.material.icons.sharp.DeleteForever
+import androidx.compose.material.icons.sharp.DeleteSweep
+import androidx.compose.material.icons.twotone.DeleteSweep
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -94,11 +101,8 @@ private fun AddTaskScreenContent(
                 Modifier
                     .fillMaxSize(),
         ) {
-            items(
-                items = uiState.taskList,
-                key = { it.id },
-            ) { task ->
-                TaskItem(task = task, uiAction = uiAction)
+            itemsIndexed(items = uiState.taskList, key = { _, task -> task.id }) { index, task ->
+                TaskItem(task = task, itemIndex = index, uiAction = uiAction)
             }
         }
 
@@ -129,6 +133,7 @@ fun FabAddTask(
 @Composable
 fun TaskItem(
     task: Task,
+    itemIndex: Int,
     uiAction: uiAction,
 ) {
     Card(
@@ -136,8 +141,7 @@ fun TaskItem(
             Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
-                .clickable(onClick = {
-                }),
+                .clickable {},
         shape = MaterialTheme.shapes.extraSmall,
         colors =
             CardDefaults.cardColors(
@@ -162,8 +166,22 @@ fun TaskItem(
             Checkbox(
                 checked = task.isChecked,
                 onCheckedChange = {
-                    uiAction(AddTaskUiAction.OnCheckTask(task))
+                    uiAction(AddTaskUiAction.OnCheckTask(itemIndex))
                 },
+                modifier = Modifier.size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Icon(
+                imageVector = Icons.Sharp.DeleteForever,
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(26.dp)
+                        .clickable {
+                            uiAction(AddTaskUiAction.OnDeleteTask(itemIndex))
+                        },
             )
         }
     }

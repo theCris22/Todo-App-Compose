@@ -32,7 +32,11 @@ class AddTaskViewModel
                 }
 
                 is AddTaskUiAction.OnCheckTask -> {
-                    onCheckTask(addTaskUiAction.task)
+                    onCheckTask(addTaskUiAction.index)
+                }
+
+                is AddTaskUiAction.OnDeleteTask -> {
+                    onDeleteTask(addTaskUiAction.index)
                 }
 
                 is AddTaskUiAction.OnSaveTaskClicked -> {
@@ -47,20 +51,40 @@ class AddTaskViewModel
 
         private fun onNoteWriting(task: String) = _addTaskUiState.update { it.copy(newTask = task) }
 
-        private fun onCheckTask(task: Task) {
+        private fun onCheckTask(index: Int) {
             _addTaskUiState.update { currentState ->
                 val updatedList =
-                    currentState.taskList.map {
-                        if (it.id == task.id) {
-                            it.copy(isChecked = !it.isChecked)
+                    currentState.taskList.mapIndexed { i, task ->
+                        if (i == index) {
+                            task.copy(isChecked = !task.isChecked)
                         } else {
-                            it
+                            task
                         }
                     }
                 currentState.copy(taskList = updatedList)
             }
         }
 
+        private fun onDeleteTask(index: Int) {
+            _addTaskUiState.update { currentState ->
+                val updatedList =
+                    currentState.taskList.filterIndexed { indexItem, _ ->
+                        index != indexItem
+                    }
+                currentState.copy(taskList = updatedList)
+            }
+        }
+
         private fun onSaveTaskClicked() =
-            _addTaskUiState.update { it.copy(taskList = it.taskList.plus(Task(task = it.newTask, isChecked = false))) }
+            _addTaskUiState.update {
+                it.copy(
+                    taskList =
+                        it.taskList.plus(
+                            Task(
+                                task = it.newTask,
+                                isChecked = false,
+                            ),
+                        ),
+                )
+            }
     }

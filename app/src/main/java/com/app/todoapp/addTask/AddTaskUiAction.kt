@@ -12,7 +12,11 @@ sealed interface AddTaskUiAction {
     ) : AddTaskUiAction
 
     data class OnCheckTask(
-        val task: Task,
+        val index: Int,
+    ) : AddTaskUiAction
+
+    data class OnDeleteTask(
+        val index: Int,
     ) : AddTaskUiAction
 
     data class OnSaveTaskClicked(
