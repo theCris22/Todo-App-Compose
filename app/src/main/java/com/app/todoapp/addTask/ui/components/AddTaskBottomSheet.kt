@@ -35,8 +35,8 @@ import kotlinx.coroutines.launch
 
 @Preview(device = "id:small_phone")
 @Composable
-fun AddTaskBottomSheetPreview() {
-    AddTaskBottomSheetContent(uiState = AddTaskUiState(task = "This are my notes"), uiAction = {})
+private fun AddTaskBottomSheetPreview() {
+    AddTaskBottomSheetContent(uiState = AddTaskUiState(newTask = "This are my notes"), uiAction = {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +71,7 @@ fun AddTaskBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskBottomSheetContent(
+private fun AddTaskBottomSheetContent(
     uiState: AddTaskUiState,
     uiAction: uiAction,
 ) {
@@ -92,7 +92,7 @@ fun AddTaskBottomSheetContent(
 }
 
 @Composable
-fun Header() {
+private fun Header() {
     Text(
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
@@ -103,12 +103,12 @@ fun Header() {
 }
 
 @Composable
-fun TaskField(
+private fun TaskField(
     uiState: AddTaskUiState,
     uiAction: uiAction,
 ) {
     OutlinedTextField(
-        value = uiState.task,
+        value = uiState.newTask,
         onValueChange = { task -> uiAction(AddTaskUiAction.OnTaskWriting(task)) },
         modifier =
             Modifier
@@ -132,18 +132,19 @@ fun TaskField(
 }
 
 @Composable
-fun SaveButton(
+private fun SaveButton(
     uiState: AddTaskUiState,
     uiAction: uiAction,
 ) {
     Button(
         onClick = {
-            uiAction(AddTaskUiAction.OnSaveTaskClicked(uiState.task))
+            uiAction(AddTaskUiAction.OnSaveTaskClicked(uiState.newTask))
         },
         modifier =
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
+        enabled = uiState.enableSaveButton,
         content = { Text("Save") },
     )
 }

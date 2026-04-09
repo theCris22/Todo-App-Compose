@@ -3,6 +3,7 @@ package com.app.todoapp.addTask.ui
 import androidx.lifecycle.ViewModel
 import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
+import com.app.todoapp.addTask.data.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,11 +31,36 @@ class AddTaskViewModel
                     onNoteWriting(addTaskUiAction.task)
                 }
 
-                is AddTaskUiAction.OnSaveTaskClicked -> {}
+                is AddTaskUiAction.OnCheckTask -> {
+                    onCheckTask(addTaskUiAction.task)
+                }
+
+                is AddTaskUiAction.OnSaveTaskClicked -> {
+                    onSaveTaskClicked()
+                    onNoteWriting("")
+                    showAddTaskBottomSheet(false)
+                }
             }
         }
 
         private fun showAddTaskBottomSheet(show: Boolean) = _addTaskUiState.update { it.copy(showAddTaskBottomSheet = show) }
 
-        private fun onNoteWriting(task: String) = _addTaskUiState.update { it.copy(task = task) }
+        private fun onNoteWriting(task: String) = _addTaskUiState.update { it.copy(newTask = task) }
+
+        private fun onCheckTask(task: Task) {
+            _addTaskUiState.update { currentState ->
+                val updatedList =
+                    currentState.taskList.map {
+                        if (it.id == task.id) {
+                            it.copy(isChecked = !it.isChecked)
+                        } else {
+                            it
+                        }
+                    }
+                currentState.copy(taskList = updatedList)
+            }
+        }
+
+        private fun onSaveTaskClicked() =
+            _addTaskUiState.update { it.copy(taskList = it.taskList.plus(Task(task = it.newTask, isChecked = false))) }
     }
