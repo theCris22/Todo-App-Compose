@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,12 +32,19 @@ import androidx.compose.ui.unit.sp
 import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
 import com.app.todoapp.addTask.ui.uiAction
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(device = "id:small_phone")
 @Composable
 private fun AddTaskBottomSheetPreview() {
-    AddTaskBottomSheetContent(uiState = AddTaskUiState(newTask = "This are my notes"), uiAction = {})
+    AddTaskBottomSheetContent(
+        uiState = AddTaskUiState(newTask = "This are my notes"),
+        uiAction = {},
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        scope = rememberCoroutineScope(),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +58,14 @@ fun AddTaskBottomSheet(
 
     ModalBottomSheet(
         modifier = Modifier,
-        content = { AddTaskBottomSheetContent(uiState = uiState, uiAction = uiAction) },
+        content = {
+            AddTaskBottomSheetContent(
+                uiState = uiState,
+                uiAction = uiAction,
+                sheetState = sheetState,
+                scope = scope,
+            )
+        },
         dragHandle = {
             Box(
                 Modifier
@@ -74,6 +89,8 @@ fun AddTaskBottomSheet(
 private fun AddTaskBottomSheetContent(
     uiState: AddTaskUiState,
     uiAction: uiAction,
+    sheetState: SheetState,
+    scope: CoroutineScope,
 ) {
     Column(
         modifier =
@@ -86,7 +103,7 @@ private fun AddTaskBottomSheetContent(
         Spacer(modifier = Modifier.height(32.dp))
         TaskField(uiAction = uiAction, uiState = uiState)
         Spacer(modifier = Modifier.height(16.dp))
-        SaveButton(uiState = uiState, uiAction = uiAction)
+        SaveButton(uiState = uiState, uiAction = uiAction, sheetState = sheetState, scope = scope)
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -131,14 +148,24 @@ private fun TaskField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SaveButton(
     uiState: AddTaskUiState,
     uiAction: uiAction,
+    sheetState: SheetState,
+    scope: CoroutineScope,
 ) {
     Button(
         onClick = {
-            uiAction(AddTaskUiAction.OnSaveTaskClicked(uiState.newTask))
+            scope
+                .launch {
+                    sheetState.hide()
+                }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        uiAction(AddTaskUiAction.OnSaveTaskClicked(uiState.newTask))
+                    }
+                }
         },
         modifier =
             Modifier

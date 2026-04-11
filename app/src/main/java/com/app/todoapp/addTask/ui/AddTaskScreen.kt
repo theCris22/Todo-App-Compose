@@ -13,11 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.sharp.DeleteForever
-import androidx.compose.material.icons.sharp.DeleteSweep
-import androidx.compose.material.icons.twotone.DeleteSweep
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -168,7 +164,7 @@ fun TaskItem(
                 onCheckedChange = {
                     uiAction(AddTaskUiAction.OnCheckTask(itemIndex))
                 },
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
 
             Spacer(modifier = Modifier.size(8.dp))
