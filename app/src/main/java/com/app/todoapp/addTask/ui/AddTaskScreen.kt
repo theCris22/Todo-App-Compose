@@ -1,5 +1,10 @@
 package com.app.todoapp.addTask.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,6 +42,7 @@ import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
 import com.app.todoapp.addTask.data.Task
 import com.app.todoapp.addTask.ui.components.AddTaskBottomSheet
+import com.app.todoapp.addTask.ui.components.EmptyState
 
 @Preview(device = "id:small_phone")
 @Composable
@@ -70,6 +76,14 @@ fun AddTaskScreen(
         uiAction = { viewModel.addTaskUiAction(it) },
     )
 
+    HandleAddTaskBottomSheet(addTaskUiState, viewModel)
+}
+
+@Composable
+private fun HandleAddTaskBottomSheet(
+    addTaskUiState: AddTaskUiState,
+    viewModel: AddTaskViewModel,
+) {
     if (addTaskUiState.showAddTaskBottomSheet) {
         AddTaskBottomSheet(
             uiState = addTaskUiState,
@@ -84,7 +98,7 @@ fun AddTaskScreen(
 private fun AddTaskScreenContent(
     modifier: Modifier,
     uiState: AddTaskUiState,
-    uiAction: uiAction,
+    uiAction: UiAction,
 ) {
     Box(
         modifier =
@@ -92,13 +106,22 @@ private fun AddTaskScreenContent(
                 .fillMaxSize()
                 .background(Color.White),
     ) {
+        AnimatedVisibility(
+            visible = uiState.taskList.isEmpty(),
+            enter = fadeIn() + scaleIn(),
+            exit = fadeOut() + scaleOut(),
+            content = { EmptyState() },
+        )
+
         LazyColumn(
             modifier =
                 Modifier
                     .fillMaxSize(),
         ) {
             itemsIndexed(items = uiState.taskList, key = { _, task -> task.id }) { index, task ->
-                TaskItem(task = task, itemIndex = index, uiAction = uiAction)
+                Box(modifier = Modifier.animateItem()) {
+                    TaskItem(task = task, itemIndex = index, uiAction = uiAction)
+                }
             }
         }
 
@@ -115,7 +138,7 @@ private fun AddTaskScreenContent(
 @Composable
 fun FabAddTask(
     modifier: Modifier = Modifier,
-    uiAction: uiAction,
+    uiAction: UiAction,
 ) {
     FloatingActionButton(
         modifier = modifier,
@@ -130,7 +153,7 @@ fun FabAddTask(
 fun TaskItem(
     task: Task,
     itemIndex: Int,
-    uiAction: uiAction,
+    uiAction: UiAction,
 ) {
     Card(
         modifier =
@@ -183,4 +206,4 @@ fun TaskItem(
     }
 }
 
-typealias uiAction = (AddTaskUiAction) -> Unit
+typealias UiAction = (AddTaskUiAction) -> Unit
