@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
-import com.app.todoapp.addTask.ui.uiAction
+import com.app.todoapp.addTask.ui.UiAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -51,7 +51,7 @@ private fun AddTaskBottomSheetPreview() {
 @Composable
 fun AddTaskBottomSheet(
     uiState: AddTaskUiState,
-    uiAction: uiAction,
+    uiAction: UiAction,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -88,7 +88,7 @@ fun AddTaskBottomSheet(
 @Composable
 private fun AddTaskBottomSheetContent(
     uiState: AddTaskUiState,
-    uiAction: uiAction,
+    uiAction: UiAction,
     sheetState: SheetState,
     scope: CoroutineScope,
 ) {
@@ -122,7 +122,7 @@ private fun Header() {
 @Composable
 private fun TaskField(
     uiState: AddTaskUiState,
-    uiAction: uiAction,
+    uiAction: UiAction,
 ) {
     OutlinedTextField(
         value = uiState.newTask,
@@ -152,7 +152,7 @@ private fun TaskField(
 @Composable
 private fun SaveButton(
     uiState: AddTaskUiState,
-    uiAction: uiAction,
+    uiAction: UiAction,
     sheetState: SheetState,
     scope: CoroutineScope,
 ) {
