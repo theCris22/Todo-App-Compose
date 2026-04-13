@@ -1,21 +1,32 @@
 package com.app.todoapp.addTask.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
-import com.app.todoapp.addTask.data.Task
+import com.app.todoapp.data.models.Task
+import com.app.todoapp.domain.GetTaskUseCase
+import com.app.todoapp.domain.InsertTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTaskViewModel
     @Inject
-    constructor() : ViewModel() {
+    constructor(
+        private val getTaskUseCase: GetTaskUseCase,
+        private val insertTaskUseCase: InsertTaskUseCase,
+    ) : ViewModel() {
         private val _addTaskUiState = MutableStateFlow(AddTaskUiState())
         val addTaskUiState = _addTaskUiState.asStateFlow()
+
+        init {
+            getTaskFromDatabase()
+        }
 
         fun addTaskUiAction(addTaskUiAction: AddTaskUiAction) {
             when (addTaskUiAction) {
@@ -75,16 +86,17 @@ class AddTaskViewModel
             }
         }
 
+        private fun getTaskFromDatabase() =
+            viewModelScope.launch {
+                getTaskUseCase().collect { taskFromDatabase ->
+                    _addTaskUiState.update { currentState ->
+                        currentState.copy(emptyState = taskFromDatabase.isEmpty(), taskList = taskFromDatabase)
+                    }
+                }
+            }
+
         private fun onSaveTaskClicked() =
-            _addTaskUiState.update {
-                it.copy(
-                    taskList =
-                        it.taskList.plus(
-                            Task(
-                                task = it.newTask,
-                                isChecked = false,
-                            ),
-                        ),
-                )
+            viewModelScope.launch {
+                insertTaskUseCase(Task(task = _addTaskUiState.value.newTask, isChecked = false))
             }
     }

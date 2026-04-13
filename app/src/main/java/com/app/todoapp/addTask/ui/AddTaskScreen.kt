@@ -40,9 +40,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.todoapp.addTask.AddTaskUiAction
 import com.app.todoapp.addTask.AddTaskUiState
-import com.app.todoapp.addTask.data.Task
 import com.app.todoapp.addTask.ui.components.AddTaskBottomSheet
 import com.app.todoapp.addTask.ui.components.EmptyState
+import com.app.todoapp.data.models.Task
 
 @Preview(device = "id:small_phone")
 @Composable
