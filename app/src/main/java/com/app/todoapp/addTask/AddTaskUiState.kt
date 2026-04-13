@@ -1,6 +1,6 @@
 package com.app.todoapp.addTask
 
-import com.app.todoapp.addTask.data.Task
+import com.app.todoapp.data.models.Task
 
 data class AddTaskUiState(
     val emptyState: Boolean = true,
